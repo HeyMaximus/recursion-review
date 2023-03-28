@@ -2,14 +2,11 @@
 // var stringifyJSON = JSON.stringify;
 
 // but you don't so you're going to write it from scratch:
-//I: an object, likely nested data.
-//O: a string made of the input object (includes '{}, :')
-//E: non-stringable objects;
-  // undefined, and functions
+
 var stringifyJSON = function(obj) {
   var stringifyed = '';
   var isNull = false;
-  if (typeof obj === 'null') {
+  if (obj === null) {
     isNull = true;
   }
 
@@ -36,13 +33,12 @@ var stringifyJSON = function(obj) {
     return undefined;
   }
   if (isArray) {
-    //brackets
     stringifyed += '[';
     obj.forEach(function(item, index) {
       if (isFunc || isUndefined) {
         stringifyed += 'null';
       } else {
-        stringifyJSON(item);
+        stringifyed += stringifyJSON(item);
       }
       if (index < obj.length - 1) {
         stringifyed += ',';
@@ -54,14 +50,11 @@ var stringifyJSON = function(obj) {
   if (isObj) {
     stringifyed += '{';
     var tempArr = [];
-    if (Object.keys(obj).length === 0) {
-      stringifyed += 'null';
-    }
     for (var key in obj) {
 
       var value = obj[key];
-      var isObj = value.constructor.name === 'Object';
-      var isUndefined = typeof value === 'undefined';
+      var isFunc = typeof value === 'function';
+      var isUndefined = value === undefined;
 
       if (!isFunc && !isUndefined) {
         var tempstring = '';
@@ -74,11 +67,6 @@ var stringifyJSON = function(obj) {
     stringifyed += tempArr.join(',');
     stringifyed += '}';
   }
-  //if obj is an array, do the following
-    //undefined etc returns null
-  //if obj is an object, do the following
-    //undefined etc is omitted
-  // if obj is undefined or a function, return undefined.
 
   return stringifyed;
 };
